@@ -9,7 +9,6 @@ int def = 0;
 int count, attr, trai;
 float *trainingData, *attribute;
 Mat src;
-Rect rect;
 
 int main(){
 
@@ -92,6 +91,7 @@ int main(){
 
 void onMouse(int event, int x, int y, int flags, void *param){
   Mat img = src.clone();
+  Rect rect;
   switch (event){
     //滑鼠左鍵
     case CV_EVENT_LBUTTONDOWN:
