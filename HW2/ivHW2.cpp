@@ -45,7 +45,7 @@ int main(){
   row = src.rows;
   col = src.cols;
   Mat image = Mat::zeros(row, col, CV_8U);
-  Mat labelsMat(cc, 1, CV_32FC1, attribute);
+  Mat attrMat(cc, 1, CV_32FC1, attribute);
   Mat trainingDataMat(cc, 3, CV_32FC1, trainingData);
   Mat testMat = imread("./hw2-test.jpg");
 //  Mat testMat = src;
@@ -55,25 +55,28 @@ int main(){
   params.kernel_type = CvSVM::LINEAR;
   params.term_crit   = cvTermCriteria(CV_TERMCRIT_ITER, 100, 1e-6);
 
-  CvSVM SVM;
-  SVM.train(trainingDataMat, labelsMat, Mat(), Mat(), params);
+  CvSVM svm;
+  svm.train(trainingDataMat, attrMat, Mat(), Mat(), params);
 
-//  image type = CV_8UC3 : 1 pixel 要3個值
-//  Vec3b bl(0, 0, 0), w (255, 255, 255);
+  //image type = CV_8UC3 : 1 pixel 要3個值
+  //Vec3b bl(0, 0, 0), w (255, 255, 255);
 
   for (i = 0; i < row; i++){
     for (j = 0; j < col; j++){
       i3 = i * 3;
       j3 = j * 3;
-      Mat sampleMat = (Mat_<float>(1,3) << testMat.data[i3 * col + j3], testMat.data[i3 * col + j3 + 1], testMat.data[i3 * col + j3 + 2]);
-      float response = SVM.predict(sampleMat);
+      //把BGR的值當array[1][3]塞到Mat裡面
+      Mat sampleMat = (Mat_<float>(1,3) << testMat.data[i3 * col + j3],
+                                           testMat.data[i3 * col + j3 + 1],
+                                           testMat.data[i3 * col + j3 + 2]);
+      float response = svm.predict(sampleMat);
 
       if(response == 1){
-//        image.at<Vec3b>(i,j) = w; // 8UC3
+        //image.at<Vec3b>(i,j) = w; // 8UC3
         image.data[i * col + j] = 255;
       }
       else if(response == -1){
-//        image.at<Vec3b>(i,j) = bl; // 8UC3
+        //image.at<Vec3b>(i,j) = bl; // 8UC3
         image.data[i * col + j] = 0;
       }
     }
@@ -95,7 +98,7 @@ void onMouse(int event, int x, int y, int flags, void *param){
       //框框左上角座標 & 寬高
       rect = Rect(x, y, 4, 4);
       //防止超出原圖片
-//      rect &= Rect(0, 0, src.cols, src.rows);
+      //rect &= Rect(0, 0, src.cols, src.rows);
 
       *(trainingData + trai++) = img.data[x * img.rows * 3 + y];
       *(trainingData + trai++) = img.data[x * img.rows * 3 + y + 1];
