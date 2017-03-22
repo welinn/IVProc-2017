@@ -100,9 +100,11 @@ void onMouse(int event, int x, int y, int flags, void *param){
       //防止超出原圖片
       //rect &= Rect(0, 0, src.cols, src.rows);
 
-      *(trainingData + trai++) = img.data[x * img.rows * 3 + y];
-      *(trainingData + trai++) = img.data[x * img.rows * 3 + y + 1];
-      *(trainingData + trai++) = img.data[x * img.rows * 3 + y + 2];
+      y *= 3;
+      x *= img.rows * 3;
+      *(trainingData + trai++) = img.data[x + y];
+      *(trainingData + trai++) = img.data[x + y + 1];
+      *(trainingData + trai++) = img.data[x + y + 2];
 
       //畫框框
       rectangle(img, rect, Scalar(0, 0, 255), 2);
