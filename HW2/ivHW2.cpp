@@ -26,8 +26,8 @@ int main(){
   cc = count;
 
   trainingData = (float*) malloc(sizeof(float) * cc * 3);
-  attribute = (float*) malloc(sizeof(float) * cc);
   if(def) attribute = defaultAttr;
+  else attribute = (float*) malloc(sizeof(float) * cc);
 
   trai = attr = 0;
 
@@ -89,19 +89,19 @@ int main(){
   return 0;
 }
 
-void onMouse(int event, int x, int y, int flags, void *param){
+void onMouse(int event, int y, int x, int flags, void *param){
   Mat img = src.clone();
   Rect rect;
   switch (event){
     //滑鼠左鍵
     case CV_EVENT_LBUTTONDOWN:
       //框框左上角座標 & 寬高
-      rect = Rect(x, y, 4, 4);
+      rect = Rect(y, x, 4, 4);
       //防止超出原圖片
       //rect &= Rect(0, 0, src.cols, src.rows);
 
       y *= 3;
-      x *= img.rows * 3;
+      x *= img.cols * 3;
       *(trainingData + trai++) = img.data[x + y];
       *(trainingData + trai++) = img.data[x + y + 1];
       *(trainingData + trai++) = img.data[x + y + 2];
