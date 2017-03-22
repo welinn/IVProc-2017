@@ -17,7 +17,7 @@ int main(){
   float defaultAttr[] = { 1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
                          -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 
-  printf("How many samples?\n");
+  printf("How many samples? ( 0 for default )\n");
   scanf("%d", &count);
   if(count == 0){
     count = defaultCount;
