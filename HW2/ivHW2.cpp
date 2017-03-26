@@ -41,12 +41,13 @@ int main(){
   setMouseCallback("Image", onMouse, NULL);
   waitKey();
 
-  row = src.rows;
-  col = src.cols;
+  Mat testMat = imread("./hw2-test.jpg");
+  row = testMat.rows;
+  col = testMat.cols;
   Mat image = Mat::zeros(row, col, CV_8U);
   Mat attrMat(cc, 1, CV_32FC1, attribute);
   Mat trainingDataMat(cc, 3, CV_32FC1, trainingData);
-  Mat testMat = imread("./hw2-test.jpg");
+
 //  Mat testMat = src;
 
   CvSVMParams params;

@@ -3,21 +3,21 @@
 
 using namespace cv;
 
+Mat sample(Mat, int, int);
 void onMouse(int, int, int, int, void*);
-Mat sampleArr(Mat, int, int);
 
 int def = 0;
-int count, attr;//, trai;
+int maskSize = 4;
+int count, attr, trai;
 float *trainingData, *attribute;
 Mat src;
 
 int main(){
 
-  int cc, i, j, x, y;
-  int row, col, i3, j3;
+  int cc, i, j, row, col, i3, j3;
   int defaultCount = 20;
   float defaultAttr[] = { 1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
-                         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 
   printf("How many samples? ( 0 for default )\n");
   scanf("%d", &count);
@@ -27,11 +27,11 @@ int main(){
   }
   cc = count;
 
-  trainingData = (float*) malloc(sizeof(float) * cc * 3 * 16);
+  trainingData = (float*) malloc(sizeof(float) * cc * 3 * maskSize * maskSize);
   if(def) attribute = defaultAttr;
   else attribute = (float*) malloc(sizeof(float) * cc);
 
-  attr = 0;
+  trai = attr = 0;
 
   src = imread("./hw2.jpg");
   if(src.data == 0){
@@ -48,7 +48,7 @@ int main(){
   col = testMat.cols;
   Mat image = Mat::zeros(row, col, CV_8U);
   Mat attrMat(cc, 1, CV_32FC1, attribute);
-  Mat trainingDataMat(cc, 48, CV_32FC1, trainingData);
+  Mat trainingDataMat(cc, maskSize * maskSize * 3, CV_32FC1, trainingData);
 
   CvSVMParams params;
   params.svm_type    = CvSVM::C_SVC;
@@ -60,15 +60,15 @@ int main(){
 
   for (i = 0; i < row; i++){
     for (j = 0; j < col; j++){
-
-      Mat sampleMat = sampleArr(testMat, i, j);
+      Mat sampleMat = sample(testMat, i, j);
       float response = svm.predict(sampleMat);
+
       if(response == 1){
         image.data[i * col + j] = 255;
       }
       else if(response == -1){
         image.data[i * col + j] = 0;
-      }	
+      }
     }
   }
   namedWindow("Image");
@@ -81,24 +81,21 @@ int main(){
 }
 
 void onMouse(int event, int y, int x, int flags, void *param){
+  int i, j, k, col = src.cols * 3;
   Mat img = src.clone();
-  int col = img.cols;
-  int i, j, k;
   Rect rect;
   switch (event){
     //滑鼠左鍵
     case CV_EVENT_LBUTTONDOWN:
       //框框左上角座標 & 寬高
       rect = Rect(y, x, 4, 4);
-
-      k = 0;
-      x *= (col * 3);
-      x += (y * 3);
-      for(i = 0; i < 4; i ++){
-        for(j = 0; j < 12; j++){
-          trainingData[k++] = img.data[x + i * col + j];
+      x = x * col + y * 3;
+      for(i = 0; i < maskSize; i++){
+        for(j = 0; j < maskSize * 3; j++){
+          trainingData[trai++] = img.data[x + i * col + j];
         }
       }
+
       //畫框框
       rectangle(img, rect, Scalar(0, 0, 255), 2);
       namedWindow("Image");
@@ -115,20 +112,19 @@ void onMouse(int event, int y, int x, int flags, void *param){
       break;
   }
 }
+Mat sample(Mat testMat, int x, int y){
 
-Mat sampleArr(Mat testMat, int x, int y){
-  float data[48];
+  float data[maskSize * maskSize * 3];
   int i, j, k;
-  int col = testMat.cols;
+  int col = testMat.cols * 3;
 
   k = 0;
-  x *= (col * 3);
-  x += (y * 3);
-  for(i = 0; i < 4; i ++){
-    for(j = 0; j < 12; j++){
+  x = x * col + y * 3;
+  for(i = 0; i < maskSize; i ++){
+    for(j = 0; j < maskSize * 3; j++){
       data[k++] = testMat.data[x + i * col + j];
     }
   }
-  Mat m(1, 48, CV_32FC1, data);
+  Mat m = Mat (maskSize * maskSize * 3, 1, CV_32FC1, data).clone();
   return m;
 }
