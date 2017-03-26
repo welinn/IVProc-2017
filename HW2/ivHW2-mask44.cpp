@@ -17,7 +17,7 @@ int main(){
   int cc, i, j, row, col, i3, j3;
   int defaultCount = 20;
   float defaultAttr[] = { 1,  1,  1,  1,  1,  1,  1,  1,  1,  1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+                         -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 
   printf("How many samples? ( 0 for default )\n");
   scanf("%d", &count);
